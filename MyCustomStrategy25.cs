@@ -46,11 +46,11 @@ namespace NinjaTrader.NinjaScript.Strategies
         public bool EnableShorts { get; set; } = true;
 
         [NinjaScriptProperty]
-        [Display(Name = "Session Start Time (HHmm)", Order = 5, GroupName = "Time Window")]
+        [Display(Name = "Session Start Time (HHmm)", Description = "Format: HHmm - Examples: 1=12:01AM, 30=12:30AM, 100=1:00AM, 930=9:30AM, 1800=6:00PM", Order = 5, GroupName = "Time Window")]
         public int StartTime { get; set; } = 1800;  // 6 PM
 
         [NinjaScriptProperty]
-        [Display(Name = "Session End Time (HHmm)", Order = 6, GroupName = "Time Window")]
+        [Display(Name = "Session End Time (HHmm)", Description = "Format: HHmm - Examples: 1=12:01AM, 300=3:00AM, 1700=5:00PM. Can be less than Start for overnight sessions.", Order = 6, GroupName = "Time Window")]
         public int EndTime { get; set; } = 1700;    // 5 PM next day
 
         [NinjaScriptProperty]
