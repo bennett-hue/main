@@ -129,13 +129,16 @@ namespace NinjaTrader.NinjaScript.Strategies
             }
             else // Day session
             {
-                // Handle bar boundaries: include a bar if it contains the start time
-                // This handles cases like StartTime=1 (12:01 AM) with 30-minute bars at time=0
-                // Include bar if: 1) at or after start, OR 2) bar might contain start time (same hour)
-                bool atOrAfterStart = (t >= StartTime) || (StartTime > t && StartTime - t < 100);
-                bool atOrBeforeEnd = (t <= EndTime);
+                // Basic check: bar time is within start and end
+                inWindow = (t >= StartTime && t <= EndTime);
 
-                inWindow = atOrAfterStart && atOrBeforeEnd;
+                // Special case: handle bar boundaries for bars that contain StartTime
+                // Example: StartTime=1 (12:01 AM) with 30-minute bars starting at time=0
+                // Only apply if StartTime > 0 to avoid matching all times
+                if (!inWindow && StartTime > 0 && t < StartTime && (StartTime - t) < 100)
+                {
+                    inWindow = true;
+                }
             }
 
             // Uncomment for detailed debugging:
