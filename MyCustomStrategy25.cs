@@ -109,11 +109,18 @@ namespace NinjaTrader.NinjaScript.Strategies
         private bool InTimeWindow()
         {
             int t = ToTime(Time[0]);
+            bool inWindow;
 
             if (StartTime > EndTime) // Overnight session (e.g., 1800 to 1700)
-                return (t >= StartTime || t <= EndTime);
+                inWindow = (t >= StartTime || t <= EndTime);
             else // Day session
-                return t >= StartTime && t <= EndTime;
+                inWindow = (t >= StartTime && t <= EndTime);
+
+            // Uncomment for detailed debugging:
+            // Print(String.Format("{0}: InTimeWindow check - t={1}, Start={2}, End={3}, Result={4}",
+            //     Time[0], t, StartTime, EndTime, inWindow));
+
+            return inWindow;
         }
 
         /// <summary>
@@ -192,11 +199,16 @@ namespace NinjaTrader.NinjaScript.Strategies
             if (!InTimeWindow())
             {
                 sessionActive = false;
+                Print(String.Format("{0}: Outside time window. CurrentTime={1}, StartTime={2}, EndTime={3}",
+                    Time[0], ToTime(Time[0]), StartTime, EndTime));
                 return;
             }
 
             if (!sessionActive)
+            {
+                Print(String.Format("{0}: Session not active (waiting for session start)", Time[0]));
                 return;
+            }
 
             // ================================
             //  UPDATE SESSION HIGH/LOW
