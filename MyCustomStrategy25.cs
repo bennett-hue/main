@@ -140,8 +140,8 @@ namespace NinjaTrader.NinjaScript.Strategies
                 else
                 {
                     // In gap between sessions (after EndTime, before StartTime)
-                    // Return next session start date (today)
-                    return Time[0].Date;
+                    // Return previous session start date to avoid premature reset
+                    return Time[0].Date.AddDays(-1);
                 }
             }
             else // Day session
