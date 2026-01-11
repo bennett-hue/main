@@ -89,17 +89,29 @@ namespace NinjaTrader.NinjaScript.Strategies
             int currentTime = ToTime(Time[0]);
             int prevTime = CurrentBar > 0 ? ToTime(Time[1]) : 0;
 
+            // Detect midnight crossing (prevTime like 2359, currentTime like 0)
+            bool crossedMidnight = prevTime > currentTime && (prevTime >= 2300 && currentTime < 100);
+
             // Session starts when we cross the StartTime
-            // For 1800 start: we cross from <1800 to >=1800
-            if (StartTime > EndTime) // Overnight session
+            if (StartTime > EndTime) // Overnight session (e.g., 1800 to 1700)
             {
                 // Check if we just crossed into start time
-                if (currentTime >= StartTime && prevTime < StartTime)
+                // Handle both normal crossing and midnight crossing
+                if (currentTime >= StartTime && prevTime < StartTime && !crossedMidnight)
+                    return true;
+
+                // Special case: StartTime is near midnight and we crossed it
+                if (crossedMidnight && StartTime < 100)
                     return true;
             }
-            else // Day session
+            else // Day session (e.g., 0 to 300 or 900 to 1600)
             {
-                if (currentTime >= StartTime && prevTime < StartTime)
+                // Normal case: crossed into StartTime
+                if (currentTime >= StartTime && prevTime < StartTime && !crossedMidnight)
+                    return true;
+
+                // Special case: StartTime is at/near midnight and we just crossed midnight
+                if (crossedMidnight && StartTime < 100 && currentTime >= StartTime)
                     return true;
             }
 
