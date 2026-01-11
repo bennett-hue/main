@@ -171,15 +171,13 @@ namespace NinjaTrader.NinjaScript.Strategies
             if (CurrentBar < 1)
                 return;
 
-            DateTime sessionStartDate = GetSessionStartDate();
-
             // ================================
             //     SESSION RESET
             // ================================
-            // Reset when we detect a new session start date OR when we cross the start time
-            if (sessionStartDate != currentSessionStartDate || IsSessionStart())
+            // Reset ONLY when we cross the start time
+            if (IsSessionStart())
             {
-                currentSessionStartDate = sessionStartDate;
+                currentSessionStartDate = GetSessionStartDate();
                 sessionHigh = High[0];
                 sessionLow = Low[0];
                 previousBarSessionHigh = High[0];
