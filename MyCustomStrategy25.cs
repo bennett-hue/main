@@ -112,9 +112,19 @@ namespace NinjaTrader.NinjaScript.Strategies
             bool inWindow;
 
             if (StartTime > EndTime) // Overnight session (e.g., 1800 to 1700)
+            {
                 inWindow = (t >= StartTime || t <= EndTime);
+            }
             else // Day session
-                inWindow = (t >= StartTime && t <= EndTime);
+            {
+                // Handle bar boundaries: include a bar if it contains the start time
+                // This handles cases like StartTime=1 (12:01 AM) with 30-minute bars at time=0
+                // Include bar if: 1) at or after start, OR 2) bar might contain start time (same hour)
+                bool atOrAfterStart = (t >= StartTime) || (StartTime > t && StartTime - t < 100);
+                bool atOrBeforeEnd = (t <= EndTime);
+
+                inWindow = atOrAfterStart && atOrBeforeEnd;
+            }
 
             // Uncomment for detailed debugging:
             // Print(String.Format("{0}: InTimeWindow check - t={1}, Start={2}, End={3}, Result={4}",
